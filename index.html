@@ -612,8 +612,11 @@ window.installApp = async function() {
 };
 
 async function initApp() {
-  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-    document.getElementById('installBanner').style.display = 'none';
+  const banner = document.getElementById('installBanner');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS || isStandalone) {
+    banner.style.display = 'none';
   }
   await init();
 }
