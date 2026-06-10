@@ -33,13 +33,13 @@
     .pick-title {
       position: relative; z-index: 2;
       text-align: center;
-      padding: calc(env(safe-area-inset-top, 16px) + 16px) 1rem 0.5rem;
+      padding: calc(env(safe-area-inset-top, 8px) + 8px) 1rem 0.25rem;
       font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--text);
       flex-shrink: 0;
     }
     .pick-hero {
       position: relative; z-index: 2;
-      width: 100%; height: 170px; flex-shrink: 0; overflow: hidden;
+      width: 100%; height: 130px; flex-shrink: 0; overflow: hidden;
     }
     .hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
     .hero-fade {
@@ -48,20 +48,20 @@
     }
     .pick-body {
       position: relative; z-index: 2;
-      flex: 1; padding: 0.75rem 0.875rem 0.5rem;
+      flex: 1; padding: 0.5rem 0.875rem 0.25rem;
       display: flex; flex-direction: column; overflow: hidden;
     }
     .pick-label {
       font-size: 11px; color: var(--text3); text-transform: uppercase;
-      letter-spacing: 1px; text-align: center; margin-bottom: 0.625rem; flex-shrink: 0;
+      letter-spacing: 1px; text-align: center; margin-bottom: 0.4rem; flex-shrink: 0;
     }
     .profiles-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 7px; flex: 1; align-content: start;
+      gap: 6px; flex: 1; align-content: start;
     }
     .profile-card {
       background: rgba(22,27,34,0.8); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 0.625rem 0.375rem 0.5rem;
+      border-radius: var(--radius); padding: 0.5rem 0.375rem 0.4rem;
       display: flex; flex-direction: column; align-items: center; gap: 5px;
       cursor: pointer; transition: border-color 0.15s, background 0.15s;
       backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -190,6 +190,10 @@
   </div>
   <div class="pick-body">
     <p class="pick-label">Elige tu perfil</p>
+    <div class="install-banner" id="installBanner">
+      <span class="install-banner-text">📲 Instala LetsMonta! en tu móvil</span>
+      <button class="install-banner-btn" onclick="installApp()">Instalar</button>
+    </div>
     <div class="profiles-grid" id="profilesGrid"></div>
   </div>
 </div>
@@ -495,7 +499,6 @@ window.toggleMonta = async function() {
   const snap = await get(ref(db, `active/${id}`));
   if (snap.exists()) {
     await remove(ref(db, `active/${id}`));
-    // Si ya no queda nadie activo, borrar el chat
     const activeSnap = await get(ref(db, 'active'));
     if (!activeSnap.exists() || Object.keys(activeSnap.val()).length === 0) {
       await remove(ref(db, 'chat'));
@@ -503,6 +506,21 @@ window.toggleMonta = async function() {
   } else {
     await set(ref(db, `active/${id}`), Date.now());
     await set(ref(db, `notify`), { senderId: id, senderName: currentUser.name, ts: Date.now() });
+    // Trigger GitHub Action to send push notifications
+    try {
+      await fetch('https://api.github.com/repos/Azrak95/letsmonta/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'token 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',
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          event_type: 'monta-activated',
+          client_payload: { senderId: id, senderName: currentUser.name }
+        })
+      });
+    } catch(e) { console.log('Push trigger failed:', e.message); }
   }
 };
 
@@ -533,6 +551,30 @@ window.logout = async function() {
   prevActiveIds = [];
   document.getElementById('mainScreen').classList.add('hidden');
   showPick();
+};
+
+
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById('installBanner').classList.add('visible');
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').classList.remove('visible');
+  deferredInstallPrompt = null;
+});
+
+window.installApp = async function() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('installBanner').classList.remove('visible');
+  }
+  deferredInstallPrompt = null;
 };
 
 init();
