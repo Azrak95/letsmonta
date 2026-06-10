@@ -13,16 +13,13 @@ let lastProcessedTs = 0;
 
 console.log('LetsMonta push server started, listening for events...');
 
-// Listen to Firebase notify node in real time
 db.ref('notify').on('value', async snap => {
   if (!snap.exists()) return;
   const { senderId, senderName, ts, sent } = snap.val();
 
-  // Skip if already sent or already processed
   if (sent || ts <= lastProcessedTs) return;
   lastProcessedTs = ts;
 
-  // Mark as sent immediately
   await db.ref('notify/sent').set(true);
 
   const tokensSnap = await db.ref('tokens').once('value');
@@ -51,24 +48,19 @@ db.ref('notify').on('value', async snap => {
     const response = await admin.messaging().sendEachForMulticast(message);
     console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
 
-    // Remove failed tokens
+    // Don't auto-delete tokens on failure - just log the error
     if (response.failureCount > 0) {
-      const updates = {};
       response.responses.forEach((resp, idx) => {
         if (!resp.success) {
-          tokensSnap.forEach(child => {
-            if (child.val() === tokens[idx]) updates[child.key] = null;
-          });
+          console.log(`Failed for token ${idx}:`, resp.error?.code, resp.error?.message);
         }
       });
-      if (Object.keys(updates).length > 0) await db.ref('tokens').update(updates);
     }
   } catch(e) {
     console.error('Error sending push:', e.message);
   }
 });
 
-// Keep-alive HTTP server so Render no cierra el proceso
 const server = http.createServer((req, res) => {
   res.writeHead(200);
   res.end('LetsMonta push server running');
