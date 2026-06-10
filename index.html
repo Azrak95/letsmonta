@@ -495,6 +495,11 @@ window.toggleMonta = async function() {
   const snap = await get(ref(db, `active/${id}`));
   if (snap.exists()) {
     await remove(ref(db, `active/${id}`));
+    // Si ya no queda nadie activo, borrar el chat
+    const activeSnap = await get(ref(db, 'active'));
+    if (!activeSnap.exists() || Object.keys(activeSnap.val()).length === 0) {
+      await remove(ref(db, 'chat'));
+    }
   } else {
     await set(ref(db, `active/${id}`), Date.now());
     await set(ref(db, `notify`), { senderId: id, senderName: currentUser.name, ts: Date.now() });
