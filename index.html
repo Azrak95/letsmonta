@@ -23,7 +23,6 @@
       --text2: #8b949e;
       --text3: #484f58;
       --green: #2ea043;
-      --green-glow: #238636;
       --green-light: #56d364;
       --green-bg: #0d2d17;
       --green-border: #2ea043;
@@ -45,7 +44,7 @@
     .logo-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
     .pick-label { font-size: 13px; color: var(--text2); text-align: center; margin-bottom: 1.25rem; letter-spacing: 0.3px; text-transform: uppercase; }
     .profiles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .profile-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 0.5rem 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; position: relative; }
+    .profile-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 0.5rem 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
     .profile-card:active { transform: scale(0.97); }
     .profile-card:hover { border-color: var(--border2); background: var(--bg3); }
     .profile-card.taken { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
@@ -59,23 +58,49 @@
     .topbar-logo { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
     .topbar-user { display: flex; align-items: center; gap: 8px; }
     .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: top; }
-    .topbar-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .topbar-name { font-size: 14px; font-weight: 600; }
 
     .main-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem 2rem; gap: 2rem; }
 
-    /* Monta button */
+    /* ── MONTA BUTTON ── */
     .monta-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-    .monta-btn { width: 170px; height: 170px; border-radius: 50%; border: 2px solid var(--border2); background: var(--bg2); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1); gap: 6px; user-select: none; -webkit-user-select: none; }
+    .monta-btn {
+      width: 170px; height: 170px; border-radius: 50%;
+      border: 2px solid var(--border2);
+      background-color: var(--bg2);
+      background-image: none;
+      background-size: cover;
+      background-position: center top;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      gap: 6px; user-select: none; -webkit-user-select: none;
+    }
     .monta-btn:active { transform: scale(0.93); }
-    .monta-btn.active { background: var(--green-bg); border-color: var(--green-border); box-shadow: 0 0 0 4px rgba(46,160,67,0.15); }
+    /* overlay that fades in when active */
+    .monta-btn::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      background-image: url('bg_monta.png');
+      background-size: cover;
+      background-position: center top;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .monta-btn.active::before { opacity: 0.45; }
+    .monta-btn.active {
+      border-color: var(--green-border);
+      box-shadow: 0 0 0 4px rgba(46,160,67,0.2), 0 0 24px rgba(46,160,67,0.15);
+    }
+    .monta-btn-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .monta-icon { font-size: 44px; transition: transform 0.3s; }
-    .monta-btn.active .monta-icon { transform: scale(1.1); }
-    .monta-text { font-size: 14px; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
+    .monta-btn.active .monta-icon { transform: scale(1.15); }
+    .monta-text { font-size: 13px; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
     .monta-btn.active .monta-text { color: var(--green-light); }
     .monta-caption { font-size: 13px; color: var(--text3); text-align: center; }
     .monta-caption.on { color: var(--green); font-weight: 500; }
 
-    /* Others list */
+    /* ── OTHERS ── */
     .others-wrap { width: 100%; max-width: 380px; }
     .others-heading { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .others-list { display: flex; flex-direction: column; gap: 8px; }
@@ -84,16 +109,15 @@
     .other-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: top; flex-shrink: 0; }
     .other-name { font-size: 14px; font-weight: 600; color: var(--green-light); flex: 1; }
     .other-tag { font-size: 11px; color: var(--green); }
-    .no-others { font-size: 13px; color: var(--text3); padding: 0.5rem 0; }
+    .no-others { font-size: 13px; color: var(--text3); }
 
-    .logout-btn { background: none; border: none; font-size: 12px; color: var(--text3); cursor: pointer; padding: 0.5rem; margin-top: 0.5rem; }
+    .logout-btn { background: none; border: none; font-size: 12px; color: var(--text3); cursor: pointer; padding: 0.5rem; }
     .logout-btn:hover { color: var(--text2); }
 
-    /* Toast */
+    /* ── TOAST ── */
     .toast { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0) + 1.25rem); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--bg3); border: 1px solid var(--green-border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: calc(100% - 2.5rem); max-width: 360px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast-av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: top; flex-shrink: 0; }
-    .toast-body { flex: 1; }
     .toast-title { font-size: 13px; font-weight: 700; color: var(--green-light); }
     .toast-msg { font-size: 12px; color: var(--text2); margin-top: 2px; }
   </style>
@@ -125,52 +149,53 @@
   <div class="main-body">
     <div class="monta-wrap">
       <div class="monta-btn" id="montaBtn" onclick="toggleMonta()">
-        <span class="monta-icon">🔥</span>
-        <span class="monta-text" id="montaText">Modo Monta</span>
+        <div class="monta-btn-inner">
+          <span class="monta-icon">🔥</span>
+          <span class="monta-text" id="montaText">Modo Monta</span>
+        </div>
       </div>
       <p class="monta-caption" id="montaCaption">Pulsa para activar</p>
     </div>
     <div class="others-wrap">
       <p class="others-heading">También en modo monta</p>
       <div class="others-list" id="othersList">
-        <p class="no-others" id="noOthers">Nadie más de momento...</p>
+        <p class="no-others">Nadie más de momento...</p>
       </div>
     </div>
     <button class="logout-btn" onclick="logout()">← Cambiar de perfil</button>
   </div>
 </div>
 
-<!-- Toast notification -->
+<!-- Toast -->
 <div class="toast" id="toast">
   <img class="toast-av" id="toastAv" src="" alt="">
-  <div class="toast-body">
+  <div>
     <div class="toast-title" id="toastTitle"></div>
-    <div class="toast-msg" id="toastMsg">¡También está en modo monta! 🔥</div>
+    <div class="toast-msg">¡También está en modo monta! 🔥</div>
   </div>
 </div>
 
 <script>
 const MEMBERS = [
-  { id: 'Monir',    name: 'Monir',     avatar: 'avatars/Monir.png' },
-  { id: 'Bego',     name: 'Bego',      avatar: 'avatars/Bego.png' },
-  { id: 'David',    name: 'David',     avatar: 'avatars/David.png' },
-  { id: 'Bea',      name: 'Bea',       avatar: 'avatars/Bea.png' },
-  { id: 'Miriam_M', name: 'Miriam M.', avatar: 'avatars/Miriam_M.png' },
-  { id: 'Edu',      name: 'Edu',       avatar: 'avatars/Edu.png' },
-  { id: 'Miriam_G', name: 'Miriam G.', avatar: 'avatars/Miriam_G.png' },
-  { id: 'Pincho',   name: 'Pincho',    avatar: 'avatars/Pincho.png' },
-  { id: 'Pipe',     name: 'Pipe',      avatar: 'avatars/Pipe.png' },
-  { id: 'Sheyla',   name: 'Sheyla',    avatar: 'avatars/Sheyla.png' },
-  { id: 'Maria',    name: 'María',     avatar: 'avatars/Maria.png' },
-  { id: 'Kiki',     name: 'Kiki',      avatar: 'avatars/Kiki.png' },
-  { id: 'Idoia',    name: 'Idoia',     avatar: 'avatars/Idoia.png' },
+  { id: 'Monir',   name: 'Monir',     avatar: 'avatars/Monir.png' },
+  { id: 'Bego',    name: 'Bego',      avatar: 'avatars/Bego.png' },
+  { id: 'David',   name: 'David',     avatar: 'avatars/David.png' },
+  { id: 'Bea',     name: 'Bea',       avatar: 'avatars/Bea.png' },
+  { id: 'Miriam',  name: 'Miriam M.', avatar: 'avatars/Miriam.png' },
+  { id: 'Edu',     name: 'Edu',       avatar: 'avatars/Edu.png' },
+  { id: 'MiriamG', name: 'Miriam G.', avatar: 'avatars/MiriamG.png' },
+  { id: 'Pincho',  name: 'Pincho',    avatar: 'avatars/Pincho.png' },
+  { id: 'Pipe',    name: 'Pipe',      avatar: 'avatars/Pipe.png' },
+  { id: 'Sheyla',  name: 'Sheyla',    avatar: 'avatars/Sheyla.png' },
+  { id: 'Maria',   name: 'María',     avatar: 'avatars/Maria.png' },
+  { id: 'Kiki',    name: 'Kiki',      avatar: 'avatars/Kiki.png' },
+  { id: 'Idoia',   name: 'Idoia',     avatar: 'avatars/Idoia.png' },
 ];
 
 let currentUser = null;
 let pollInterval = null;
 let prevOthers = [];
 let toastTimeout = null;
-
 const LS_KEY = 'letsmonta_v1';
 
 function getShared() {
@@ -180,7 +205,6 @@ function getShared() {
 function setShared(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
 function getMember(id) { return MEMBERS.find(m => m.id === id); }
 
-// ── PICK SCREEN ──
 function renderPick() {
   const s = getShared();
   const grid = document.getElementById('profilesGrid');
@@ -201,7 +225,6 @@ function renderPick() {
 
 function pickProfile(id) {
   const s = getShared();
-  // Release any previous claim for this id
   Object.keys(s.taken).forEach(k => { if (s.taken[k] === id) delete s.taken[k]; });
   s.taken[id] = id;
   setShared(s);
@@ -209,15 +232,13 @@ function pickProfile(id) {
   showMain();
 }
 
-// ── MAIN SCREEN ──
 function showMain() {
   document.getElementById('pickScreen').classList.add('hidden');
   document.getElementById('mainScreen').classList.remove('hidden');
-  const u = currentUser;
-  document.getElementById('topbarAvatar').src = u.avatar;
-  document.getElementById('topbarName').textContent = u.name;
+  document.getElementById('topbarAvatar').src = currentUser.avatar;
+  document.getElementById('topbarName').textContent = currentUser.name;
   const s = getShared();
-  prevOthers = Object.keys(s.active || {}).filter(k => k !== u.id);
+  prevOthers = Object.keys(s.active || {}).filter(k => k !== currentUser.id);
   renderMain();
   startPolling();
 }
@@ -270,8 +291,7 @@ function startPolling() {
     const s = getShared();
     const id = currentUser.id;
     const newOthers = Object.keys(s.active || {}).filter(k => k !== id);
-    const joined = newOthers.filter(k => !prevOthers.includes(k));
-    joined.forEach(k => {
+    newOthers.filter(k => !prevOthers.includes(k)).forEach(k => {
       const m = getMember(k);
       if (m) showToast(m);
     });
@@ -292,9 +312,8 @@ function showToast(member) {
 function logout() {
   clearInterval(pollInterval);
   const s = getShared();
-  const id = currentUser.id;
-  if (s.active) delete s.active[id];
-  if (s.taken) delete s.taken[id];
+  if (s.active) delete s.active[currentUser.id];
+  if (s.taken) delete s.taken[currentUser.id];
   setShared(s);
   currentUser = null;
   document.getElementById('mainScreen').classList.add('hidden');
@@ -302,13 +321,8 @@ function logout() {
   renderPick();
 }
 
-// Init
 renderPick();
-
-// Register service worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
