@@ -17,27 +17,61 @@
       --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
       --text: #e6edf3; --text2: #8b949e; --text3: #484f58;
       --green: #2ea043; --green-light: #56d364; --green-bg: #0d2d17; --green-border: #2ea043;
+      --amber: rgba(251,191,36,0.5); --amber2: rgba(251,191,36,0.4);
+      --pipe: rgba(120,80,20,0.35);
       --radius: 12px; --radius-sm: 8px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); overflow: hidden; }
     .screen { position: fixed; inset: 0; display: flex; flex-direction: column; transition: opacity 0.25s, transform 0.25s; }
     .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
+
+    /* ── PICK SCREEN ── */
     #pickScreen { background: var(--bg); overflow-y: auto; }
-    .pick-inner { padding: 2rem 1.25rem; max-width: 480px; margin: 0 auto; }
-    .logo-wrap { text-align: center; margin-bottom: 2rem; }
-    .logo-img { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; margin-bottom: 0.75rem; }
-    .logo-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
-    .logo-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
-    .pick-label { font-size: 13px; color: var(--text2); text-align: center; margin-bottom: 1.25rem; letter-spacing: 0.3px; text-transform: uppercase; }
+    .pipes-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .pick-hero {
+      position: relative; z-index: 1; width: 100%; height: 240px;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      padding-bottom: 1.5rem; overflow: hidden; flex-shrink: 0;
+    }
+    .hero-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(13,17,23,0.2) 0%, rgba(13,17,23,0.9) 100%);
+    }
+    .hero-content { position: relative; z-index: 1; text-align: center; }
+    .hero-title { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; color: #e6edf3; }
+    .hero-sub { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+    .pick-inner { position: relative; z-index: 1; padding: 1.25rem; padding-bottom: 2rem; }
+    .pick-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 1rem; }
     .profiles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .profile-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 0.5rem 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .profile-card {
+      background: rgba(22,27,34,0.8); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.875rem 0.5rem 0.75rem;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
     .profile-card:active { transform: scale(0.97); }
-    .profile-card:hover { border-color: var(--border2); background: var(--bg3); }
+    .profile-card:hover { border-color: var(--border2); background: rgba(33,38,45,0.9); }
     .profile-card.taken { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
-    .p-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; object-position: top; background: var(--bg3); }
-    .p-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .p-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: top; background: var(--bg3); }
+    .p-name { font-size: 12px; font-weight: 600; color: var(--text); }
     .p-taken { font-size: 10px; color: var(--text3); }
+
+    /* ── PIPE ANIMATIONS ── */
+    .pipe-outer { fill: none; stroke-linecap: round; stroke: var(--pipe); stroke-width: 10; }
+    .pipe-inner { fill: none; stroke-linecap: round; stroke-width: 6; }
+    .beer-flow1 { stroke: var(--amber); stroke-dasharray: 10 16; animation: flow 2s linear infinite; }
+    .beer-flow2 { stroke: var(--amber2); stroke-dasharray: 10 16; animation: flow 2.8s linear infinite; }
+    .beer-flow3 { stroke: var(--amber); stroke-dasharray: 10 16; animation: flow 3.4s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset: -104; } }
+    .connector { fill: rgba(100,60,10,0.4); stroke: rgba(140,90,20,0.45); stroke-width: 1; }
+
+    /* ── MAIN SCREEN ── */
     #mainScreen { background: var(--bg); }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 12px) + 12px) 1.25rem 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .topbar-logo { font-size: 17px; font-weight: 700; }
@@ -88,12 +122,44 @@
 </div>
 
 <div class="screen hidden" id="pickScreen">
-  <div class="pick-inner">
-    <div class="logo-wrap">
-      <img src="app_icon.png" class="logo-img" alt="LetsMonta!">
-      <div class="logo-title">LetsMonta!</div>
-      <div class="logo-sub">¿Quién está de monta hoy?</div>
+  <!-- Pipes background SVG -->
+  <svg class="pipes-bg" viewBox="0 0 390 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pipe 1: top-left to mid-right -->
+    <path class="pipe-outer" d="M-10 130 H90 Q110 130 110 150 V270 Q110 290 130 290 H210 Q230 290 230 270 V190 Q230 170 250 170 H400"/>
+    <path class="pipe-inner beer-flow1" d="M-10 130 H90 Q110 130 110 150 V270 Q110 290 130 290 H210 Q230 290 230 270 V190 Q230 170 250 170 H400"/>
+    <!-- Pipe 2: bottom-left winding -->
+    <path class="pipe-outer" d="M-10 420 H70 Q90 420 90 440 V530 Q90 550 110 550 H290 Q310 550 310 570 V650 Q310 670 330 670 H400"/>
+    <path class="pipe-inner beer-flow2" d="M-10 420 H70 Q90 420 90 440 V530 Q90 550 110 550 H290 Q310 550 310 570 V650 Q310 670 330 670 H400"/>
+    <!-- Pipe 3: right side going up -->
+    <path class="pipe-outer" d="M400 480 H320 Q300 480 300 460 V360 Q300 340 280 340 H160 Q140 340 140 360 V450 Q140 470 120 470 H-10"/>
+    <path class="pipe-inner beer-flow3" d="M400 480 H320 Q300 480 300 460 V360 Q300 340 280 340 H160 Q140 340 140 360 V450 Q140 470 120 470 H-10"/>
+    <!-- Connectors -->
+    <circle class="connector" cx="110" cy="290" r="9"/>
+    <circle class="connector" cx="230" cy="290" r="9"/>
+    <circle class="connector" cx="230" cy="170" r="9"/>
+    <circle class="connector" cx="90" cy="550" r="9"/>
+    <circle class="connector" cx="310" cy="550" r="9"/>
+    <circle class="connector" cx="310" cy="670" r="9"/>
+    <circle class="connector" cx="300" cy="340" r="9"/>
+    <circle class="connector" cx="160" cy="340" r="9"/>
+    <circle class="connector" cx="140" cy="470" r="9"/>
+    <!-- Tap icons at pipe ends -->
+    <rect class="connector" x="96" y="122" width="28" height="16" rx="5"/>
+    <rect class="connector" x="76" y="412" width="28" height="16" rx="5"/>
+    <rect class="connector" x="286" y="332" width="28" height="16" rx="5"/>
+  </svg>
+
+  <!-- Hero section with app icon as background -->
+  <div class="pick-hero">
+    <img src="app_icon.png" class="hero-img" alt="">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-title">LetsMonta! 🍻</div>
+      <div class="hero-sub">¿Quién está de monta hoy?</div>
     </div>
+  </div>
+
+  <div class="pick-inner">
     <p class="pick-label">Elige tu perfil</p>
     <div class="profiles-grid" id="profilesGrid"></div>
   </div>
@@ -181,22 +247,15 @@ let unsubscribeTaken = null;
 
 function getMember(id) { return MEMBERS.find(m => m.id === id); }
 
-// ── NOTIFICACIONES PUSH ──
 async function setupPush(userId) {
   try {
     if (!('Notification' in window)) return;
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return;
-
     await navigator.serviceWorker.register('/letsmonta/firebase-messaging-sw.js');
     const sw = await navigator.serviceWorker.ready;
-
     const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: sw });
-    if (token) {
-      await set(ref(db, `tokens/${userId}`), token);
-    }
-
-    // Notificación cuando la app está en primer plano
+    if (token) await set(ref(db, `tokens/${userId}`), token);
     onMessage(messaging, payload => {
       const m = getMember(payload.data?.senderId);
       if (m) showToast(m);
@@ -206,18 +265,13 @@ async function setupPush(userId) {
   }
 }
 
-// ── INIT ──
 async function init() {
   const savedId = localStorage.getItem(SESSION_KEY);
   if (savedId) {
     const snap = await get(ref(db, `taken/${savedId}`));
     if (snap.exists() && snap.val() === savedId) {
       currentUser = getMember(savedId);
-      if (currentUser) {
-        hideLoading();
-        showMain();
-        return;
-      }
+      if (currentUser) { hideLoading(); showMain(); return; }
     } else {
       localStorage.removeItem(SESSION_KEY);
     }
@@ -226,18 +280,13 @@ async function init() {
   showPick();
 }
 
-function hideLoading() {
-  document.getElementById('loading').classList.add('hidden');
-}
+function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
 
-// ── PICK SCREEN ──
 function showPick() {
   document.getElementById('pickScreen').classList.remove('hidden');
   document.getElementById('mainScreen').classList.add('hidden');
   if (unsubscribeTaken) unsubscribeTaken();
-  unsubscribeTaken = onValue(ref(db, 'taken'), snap => {
-    renderPick(snap.val() || {});
-  });
+  unsubscribeTaken = onValue(ref(db, 'taken'), snap => renderPick(snap.val() || {}));
 }
 
 function renderPick(taken) {
@@ -265,20 +314,16 @@ async function pickProfile(id) {
   showMain();
 }
 
-// ── MAIN SCREEN ──
 function showMain() {
   document.getElementById('pickScreen').classList.add('hidden');
   document.getElementById('mainScreen').classList.remove('hidden');
   document.getElementById('topbarAvatar').src = currentUser.avatar;
   document.getElementById('topbarName').textContent = currentUser.name;
-
   setupPush(currentUser.id);
-
   if (unsubscribeActive) unsubscribeActive();
   unsubscribeActive = onValue(ref(db, 'active'), snap => {
     const active = snap.val() || {};
-    const id = currentUser.id;
-    const newActiveIds = Object.keys(active).filter(k => k !== id);
+    const newActiveIds = Object.keys(active).filter(k => k !== currentUser.id);
     newActiveIds.filter(k => !prevActiveIds.includes(k)).forEach(k => {
       const m = getMember(k);
       if (m) showToast(m);
@@ -286,20 +331,17 @@ function showMain() {
     prevActiveIds = newActiveIds;
     renderMain(active);
   });
-
   window.addEventListener('beforeunload', cleanup);
 }
 
 function renderMain(active) {
   const id = currentUser.id;
   const isOn = !!active[id];
-  const btn = document.getElementById('montaBtn');
-  btn.classList.toggle('active', isOn);
+  document.getElementById('montaBtn').classList.toggle('active', isOn);
   document.getElementById('montaText').textContent = isOn ? '¡Activo!' : 'Modo Monta';
   const caption = document.getElementById('montaCaption');
   caption.textContent = isOn ? '¡Estás en modo monta! 🔥' : 'Pulsa para activar';
   caption.className = 'monta-caption' + (isOn ? ' on' : '');
-
   const others = Object.keys(active).filter(k => k !== id);
   const list = document.getElementById('othersList');
   list.innerHTML = '';
@@ -328,19 +370,9 @@ window.toggleMonta = async function() {
     await remove(ref(db, `active/${id}`));
   } else {
     await set(ref(db, `active/${id}`), Date.now());
-    // Enviar notificación push a todos los demás que estén activos
-    await sendPushToOthers(id);
+    await set(ref(db, `notify`), { senderId: id, senderName: currentUser.name, ts: Date.now() });
   }
 };
-
-async function sendPushToOthers(senderId) {
-  // Guardamos en Firebase que hay una nueva activación, el SW lo detecta
-  await set(ref(db, `notify`), {
-    senderId,
-    senderName: currentUser.name,
-    ts: Date.now()
-  });
-}
 
 function showToast(member) {
   document.getElementById('toastAv').src = member.avatar;
