@@ -542,6 +542,9 @@ window.logout = async function() {
 let deferredInstallPrompt = null;
 
 window.addEventListener('beforeinstallprompt', e => {
+  // Only show on Android, not iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) return;
   e.preventDefault();
   deferredInstallPrompt = e;
   document.getElementById('installBanner').classList.add('visible');
