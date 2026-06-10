@@ -356,6 +356,7 @@ async function setupPush(userId) {
 }
 
 async function init() {
+  await cleanStaleSessions();
   const savedId = localStorage.getItem(SESSION_KEY);
   if (savedId) {
     const snap = await get(ref(db, `taken/${savedId}`));
@@ -415,6 +416,7 @@ function showMain() {
   initBubbles('mainBubbles');
   setupPush(currentUser.id);
   startChat();
+  startHeartbeat();
   if (unsubscribeActive) unsubscribeActive();
   unsubscribeActive = onValue(ref(db, 'active'), snap => {
     const active = snap.val() || {};
@@ -520,10 +522,12 @@ function showToast(member) {
 
 async function cleanup() {
   if (!currentUser) return;
+  stopHeartbeat();
   await remove(ref(db, `active/${currentUser.id}`));
 }
 
 window.logout = async function() {
+  stopHeartbeat();
   if (unsubscribeActive) { unsubscribeActive(); unsubscribeActive = null; }
   if (currentUser) {
     await remove(ref(db, `active/${currentUser.id}`));
@@ -538,6 +542,51 @@ window.logout = async function() {
   showPick();
 };
 
+
+let heartbeatInterval = null;
+
+function startHeartbeat() {
+  if (heartbeatInterval) clearInterval(heartbeatInterval);
+  const id = currentUser.id;
+  const updateHeartbeat = () => set(ref(db, `heartbeat/${id}`), Date.now());
+  updateHeartbeat();
+  heartbeatInterval = setInterval(updateHeartbeat, 30000);
+}
+
+function stopHeartbeat() {
+  if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+  if (currentUser) remove(ref(db, `heartbeat/${currentUser.id}`));
+}
+
+// Check for stale taken profiles on load and clean them up
+async function cleanStaleSessions() {
+  const [takenSnap, heartbeatSnap] = await Promise.all([
+    get(ref(db, 'taken')),
+    get(ref(db, 'heartbeat'))
+  ]);
+  if (!takenSnap.exists()) return;
+  const taken = takenSnap.val();
+  const heartbeats = heartbeatSnap.exists() ? heartbeatSnap.val() : {};
+  const now = Date.now();
+  const updates = {};
+  const activeSnap = await get(ref(db, 'active'));
+  const active = activeSnap.exists() ? activeSnap.val() : {};
+  Object.keys(taken).forEach(id => {
+    const last = heartbeats[id] || 0;
+    const isInMontaMode = !!active[id];
+    // Only release profile if no heartbeat AND not in monta mode
+    if (now - last > 180000 && !isInMontaMode) {
+      updates[`taken/${id}`] = null;
+      updates[`heartbeat/${id}`] = null;
+    }
+  });
+  if (Object.keys(updates).length > 0) {
+    await Promise.all(Object.entries(updates).map(([path, val]) =>
+      val === null ? remove(ref(db, path)) : set(ref(db, path), val)
+    ));
+    console.log('Cleaned stale sessions:', Object.keys(updates));
+  }
+}
 
 let deferredInstallPrompt = null;
 
