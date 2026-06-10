@@ -21,10 +21,8 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); overflow: hidden; }
-
     .screen { position: fixed; inset: 0; display: flex; flex-direction: column; transition: opacity 0.25s, transform 0.25s; }
     .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
-
     #pickScreen { background: var(--bg); overflow-y: auto; }
     .pick-inner { padding: 2rem 1.25rem; max-width: 480px; margin: 0 auto; }
     .logo-wrap { text-align: center; margin-bottom: 2rem; }
@@ -40,32 +38,17 @@
     .p-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; object-position: top; background: var(--bg3); }
     .p-name { font-size: 13px; font-weight: 600; color: var(--text); }
     .p-taken { font-size: 10px; color: var(--text3); }
-
     #mainScreen { background: var(--bg); }
     .topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 12px) + 12px) 1.25rem 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .topbar-logo { font-size: 17px; font-weight: 700; }
     .topbar-user { display: flex; align-items: center; gap: 8px; }
     .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: top; }
     .topbar-name { font-size: 14px; font-weight: 600; }
-
     .main-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem 2rem; gap: 2rem; }
-
     .monta-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-    .monta-btn {
-      width: 170px; height: 170px; border-radius: 50%;
-      border: 2px solid var(--border2); background-color: var(--bg2);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      user-select: none; -webkit-user-select: none;
-    }
+    .monta-btn { width: 170px; height: 170px; border-radius: 50%; border: 2px solid var(--border2); background-color: var(--bg2); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; user-select: none; -webkit-user-select: none; }
     .monta-btn:active { transform: scale(0.93); }
-    .monta-btn::before {
-      content: ''; position: absolute; inset: 0; border-radius: 50%;
-      background-image: url('bg_monta.png');
-      background-size: cover; background-position: center top;
-      opacity: 0; transition: opacity 0.4s ease;
-    }
+    .monta-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background-image: url('bg_monta.png'); background-size: cover; background-position: center top; opacity: 0; transition: opacity 0.4s ease; }
     .monta-btn.active::before { opacity: 0.45; }
     .monta-btn.active { border-color: var(--green-border); box-shadow: 0 0 0 4px rgba(46,160,67,0.2), 0 0 24px rgba(46,160,67,0.15); }
     .monta-btn-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
@@ -75,7 +58,6 @@
     .monta-btn.active .monta-text { color: var(--green-light); }
     .monta-caption { font-size: 13px; color: var(--text3); text-align: center; }
     .monta-caption.on { color: var(--green); font-weight: 500; }
-
     .others-wrap { width: 100%; max-width: 380px; }
     .others-heading { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .others-list { display: flex; flex-direction: column; gap: 8px; }
@@ -85,16 +67,13 @@
     .other-name { font-size: 14px; font-weight: 600; color: var(--green-light); flex: 1; }
     .other-tag { font-size: 11px; color: var(--green); }
     .no-others { font-size: 13px; color: var(--text3); }
-
     .logout-btn { background: none; border: none; font-size: 12px; color: var(--text3); cursor: pointer; padding: 0.5rem; }
     .logout-btn:hover { color: var(--text2); }
-
     .toast { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0) + 1.25rem); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--bg3); border: 1px solid var(--green-border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: calc(100% - 2.5rem); max-width: 360px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast-av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: top; flex-shrink: 0; }
     .toast-title { font-size: 13px; font-weight: 700; color: var(--green-light); }
     .toast-msg { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
     .loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; z-index: 9999; transition: opacity 0.3s; }
     .loading.hidden { opacity: 0; pointer-events: none; }
     .loading-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; }
@@ -159,6 +138,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAg6VpZZSlfS7zXuH8aklndJKgLlM1SmCM",
@@ -170,8 +150,11 @@ const firebaseConfig = {
   appId: "1:827368602785:web:d6df974b604243579d04e0"
 };
 
+const VAPID_KEY = "BPW1z89E8Uw5308WBIWh7S9k2tjR31NHwGOEikYOEjoLtmi0-6woGrS93ETEgDsJMPGLp0fbf5RAbBJHU_dfKCI";
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const messaging = getMessaging(app);
 
 const MEMBERS = [
   { id: 'Monir',   name: 'Monir',     avatar: 'avatars/Monir.png' },
@@ -198,14 +181,37 @@ let unsubscribeTaken = null;
 
 function getMember(id) { return MEMBERS.find(m => m.id === id); }
 
+// ── NOTIFICACIONES PUSH ──
+async function setupPush(userId) {
+  try {
+    if (!('Notification' in window)) return;
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+
+    await navigator.serviceWorker.register('/letsmonta/firebase-messaging-sw.js');
+    const sw = await navigator.serviceWorker.ready;
+
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: sw });
+    if (token) {
+      await set(ref(db, `tokens/${userId}`), token);
+    }
+
+    // Notificación cuando la app está en primer plano
+    onMessage(messaging, payload => {
+      const m = getMember(payload.data?.senderId);
+      if (m) showToast(m);
+    });
+  } catch (e) {
+    console.log('Push no disponible:', e.message);
+  }
+}
+
 // ── INIT ──
 async function init() {
   const savedId = localStorage.getItem(SESSION_KEY);
   if (savedId) {
-    // Check if this session is still valid in Firebase
     const snap = await get(ref(db, `taken/${savedId}`));
     if (snap.exists() && snap.val() === savedId) {
-      // Session still valid, restore it
       currentUser = getMember(savedId);
       if (currentUser) {
         hideLoading();
@@ -213,7 +219,6 @@ async function init() {
         return;
       }
     } else {
-      // Session expired, clear it
       localStorage.removeItem(SESSION_KEY);
     }
   }
@@ -229,12 +234,9 @@ function hideLoading() {
 function showPick() {
   document.getElementById('pickScreen').classList.remove('hidden');
   document.getElementById('mainScreen').classList.add('hidden');
-
-  // Listen to taken in real time so cards update live
   if (unsubscribeTaken) unsubscribeTaken();
   unsubscribeTaken = onValue(ref(db, 'taken'), snap => {
-    const taken = snap.val() || {};
-    renderPick(taken);
+    renderPick(snap.val() || {});
   });
 }
 
@@ -270,14 +272,13 @@ function showMain() {
   document.getElementById('topbarAvatar').src = currentUser.avatar;
   document.getElementById('topbarName').textContent = currentUser.name;
 
-  // Listen to active in real time
+  setupPush(currentUser.id);
+
   if (unsubscribeActive) unsubscribeActive();
   unsubscribeActive = onValue(ref(db, 'active'), snap => {
     const active = snap.val() || {};
     const id = currentUser.id;
     const newActiveIds = Object.keys(active).filter(k => k !== id);
-
-    // Detect new joiners → show toast
     newActiveIds.filter(k => !prevActiveIds.includes(k)).forEach(k => {
       const m = getMember(k);
       if (m) showToast(m);
@@ -286,17 +287,16 @@ function showMain() {
     renderMain(active);
   });
 
-  // Clean up on page close/reload
   window.addEventListener('beforeunload', cleanup);
 }
 
 function renderMain(active) {
   const id = currentUser.id;
-  const isOn = !!(active[id]);
+  const isOn = !!active[id];
   const btn = document.getElementById('montaBtn');
-  const caption = document.getElementById('montaCaption');
   btn.classList.toggle('active', isOn);
   document.getElementById('montaText').textContent = isOn ? '¡Activo!' : 'Modo Monta';
+  const caption = document.getElementById('montaCaption');
   caption.textContent = isOn ? '¡Estás en modo monta! 🔥' : 'Pulsa para activar';
   caption.className = 'monta-caption' + (isOn ? ' on' : '');
 
@@ -328,8 +328,19 @@ window.toggleMonta = async function() {
     await remove(ref(db, `active/${id}`));
   } else {
     await set(ref(db, `active/${id}`), Date.now());
+    // Enviar notificación push a todos los demás que estén activos
+    await sendPushToOthers(id);
   }
 };
+
+async function sendPushToOthers(senderId) {
+  // Guardamos en Firebase que hay una nueva activación, el SW lo detecta
+  await set(ref(db, `notify`), {
+    senderId,
+    senderName: currentUser.name,
+    ts: Date.now()
+  });
+}
 
 function showToast(member) {
   document.getElementById('toastAv').src = member.avatar;
@@ -350,6 +361,7 @@ window.logout = async function() {
   if (currentUser) {
     await remove(ref(db, `active/${currentUser.id}`));
     await remove(ref(db, `taken/${currentUser.id}`));
+    await remove(ref(db, `tokens/${currentUser.id}`));
   }
   localStorage.removeItem(SESSION_KEY);
   currentUser = null;
@@ -359,8 +371,6 @@ window.logout = async function() {
 };
 
 init();
-
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
