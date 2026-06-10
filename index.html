@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LetsMonta!</title>
-  <meta name="description" content="¿Quién está en modo monta hoy?">
   <meta name="theme-color" content="#0d1117">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,20 +13,11 @@
   <link rel="icon" type="image/png" href="app_icon.png">
   <style>
     :root {
-      --bg: #0d1117;
-      --bg2: #161b22;
-      --bg3: #21262d;
-      --border: rgba(255,255,255,0.08);
-      --border2: rgba(255,255,255,0.15);
-      --text: #e6edf3;
-      --text2: #8b949e;
-      --text3: #484f58;
-      --green: #2ea043;
-      --green-light: #56d364;
-      --green-bg: #0d2d17;
-      --green-border: #2ea043;
-      --radius: 12px;
-      --radius-sm: 8px;
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+      --text: #e6edf3; --text2: #8b949e; --text3: #484f58;
+      --green: #2ea043; --green-light: #56d364; --green-bg: #0d2d17; --green-border: #2ea043;
+      --radius: 12px; --radius-sm: 8px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); overflow: hidden; }
@@ -35,9 +25,8 @@
     .screen { position: fixed; inset: 0; display: flex; flex-direction: column; transition: opacity 0.25s, transform 0.25s; }
     .screen.hidden { opacity: 0; pointer-events: none; transform: scale(0.97); }
 
-    /* ── PICK SCREEN ── */
-    #pickScreen { background: var(--bg); overflow-y: auto; padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0); }
-    .pick-inner { padding: 2rem 1.25rem 2rem; max-width: 480px; margin: 0 auto; }
+    #pickScreen { background: var(--bg); overflow-y: auto; }
+    .pick-inner { padding: 2rem 1.25rem; max-width: 480px; margin: 0 auto; }
     .logo-wrap { text-align: center; margin-bottom: 2rem; }
     .logo-img { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; margin-bottom: 0.75rem; }
     .logo-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
@@ -52,46 +41,33 @@
     .p-name { font-size: 13px; font-weight: 600; color: var(--text); }
     .p-taken { font-size: 10px; color: var(--text3); }
 
-    /* ── MAIN SCREEN ── */
     #mainScreen { background: var(--bg); }
-    .topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 12px) + 12px) 1.25rem 12px; border-bottom: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
-    .topbar-logo { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 12px) + 12px) 1.25rem 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .topbar-logo { font-size: 17px; font-weight: 700; }
     .topbar-user { display: flex; align-items: center; gap: 8px; }
     .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: top; }
     .topbar-name { font-size: 14px; font-weight: 600; }
 
     .main-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem 2rem; gap: 2rem; }
 
-    /* ── MONTA BUTTON ── */
     .monta-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
     .monta-btn {
       width: 170px; height: 170px; border-radius: 50%;
-      border: 2px solid var(--border2);
-      background-color: var(--bg2);
-      background-image: none;
-      background-size: cover;
-      background-position: center top;
+      border: 2px solid var(--border2); background-color: var(--bg2);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; position: relative; overflow: hidden;
       transition: border-color 0.3s, box-shadow 0.3s;
-      gap: 6px; user-select: none; -webkit-user-select: none;
+      user-select: none; -webkit-user-select: none;
     }
     .monta-btn:active { transform: scale(0.93); }
-    /* overlay that fades in when active */
     .monta-btn::before {
-      content: '';
-      position: absolute; inset: 0; border-radius: 50%;
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
       background-image: url('bg_monta.png');
-      background-size: cover;
-      background-position: center top;
-      opacity: 0;
-      transition: opacity 0.4s ease;
+      background-size: cover; background-position: center top;
+      opacity: 0; transition: opacity 0.4s ease;
     }
     .monta-btn.active::before { opacity: 0.45; }
-    .monta-btn.active {
-      border-color: var(--green-border);
-      box-shadow: 0 0 0 4px rgba(46,160,67,0.2), 0 0 24px rgba(46,160,67,0.15);
-    }
+    .monta-btn.active { border-color: var(--green-border); box-shadow: 0 0 0 4px rgba(46,160,67,0.2), 0 0 24px rgba(46,160,67,0.15); }
     .monta-btn-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .monta-icon { font-size: 44px; transition: transform 0.3s; }
     .monta-btn.active .monta-icon { transform: scale(1.15); }
@@ -100,7 +76,6 @@
     .monta-caption { font-size: 13px; color: var(--text3); text-align: center; }
     .monta-caption.on { color: var(--green); font-weight: 500; }
 
-    /* ── OTHERS ── */
     .others-wrap { width: 100%; max-width: 380px; }
     .others-heading { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .others-list { display: flex; flex-direction: column; gap: 8px; }
@@ -114,18 +89,26 @@
     .logout-btn { background: none; border: none; font-size: 12px; color: var(--text3); cursor: pointer; padding: 0.5rem; }
     .logout-btn:hover { color: var(--text2); }
 
-    /* ── TOAST ── */
     .toast { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0) + 1.25rem); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--bg3); border: 1px solid var(--green-border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: calc(100% - 2.5rem); max-width: 360px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast-av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: top; flex-shrink: 0; }
     .toast-title { font-size: 13px; font-weight: 700; color: var(--green-light); }
     .toast-msg { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+    .loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; z-index: 9999; transition: opacity 0.3s; }
+    .loading.hidden { opacity: 0; pointer-events: none; }
+    .loading-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; }
+    .loading-text { font-size: 14px; color: var(--text3); }
   </style>
 </head>
 <body>
 
-<!-- PICK SCREEN -->
-<div class="screen" id="pickScreen">
+<div class="loading" id="loading">
+  <img src="app_icon.png" class="loading-logo" alt="">
+  <p class="loading-text">Cargando...</p>
+</div>
+
+<div class="screen hidden" id="pickScreen">
   <div class="pick-inner">
     <div class="logo-wrap">
       <img src="app_icon.png" class="logo-img" alt="LetsMonta!">
@@ -137,7 +120,6 @@
   </div>
 </div>
 
-<!-- MAIN SCREEN -->
 <div class="screen hidden" id="mainScreen">
   <div class="topbar">
     <span class="topbar-logo">LetsMonta! 🍻</span>
@@ -166,7 +148,6 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast">
   <img class="toast-av" id="toastAv" src="" alt="">
   <div>
@@ -175,13 +156,29 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAg6VpZZSlfS7zXuH8aklndJKgLlM1SmCM",
+  authDomain: "letsmonta.firebaseapp.com",
+  databaseURL: "https://letsmonta-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "letsmonta",
+  storageBucket: "letsmonta.firebasestorage.app",
+  messagingSenderId: "827368602785",
+  appId: "1:827368602785:web:d6df974b604243579d04e0"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const MEMBERS = [
   { id: 'Monir',   name: 'Monir',     avatar: 'avatars/Monir.png' },
   { id: 'Bego',    name: 'Bego',      avatar: 'avatars/Bego.png' },
   { id: 'David',   name: 'David',     avatar: 'avatars/David.png' },
   { id: 'Bea',     name: 'Bea',       avatar: 'avatars/Bea.png' },
-  { id: 'Miriam',  name: 'Miriam M.', avatar: 'avatars/Miriam.png' },
+  { id: 'Miriam',  name: 'Miriam',    avatar: 'avatars/Miriam.png' },
   { id: 'Edu',     name: 'Edu',       avatar: 'avatars/Edu.png' },
   { id: 'MiriamG', name: 'Miriam G.', avatar: 'avatars/MiriamG.png' },
   { id: 'Pincho',  name: 'Pincho',    avatar: 'avatars/Pincho.png' },
@@ -192,25 +189,60 @@ const MEMBERS = [
   { id: 'Idoia',   name: 'Idoia',     avatar: 'avatars/Idoia.png' },
 ];
 
+const SESSION_KEY = 'letsmonta_session';
 let currentUser = null;
-let pollInterval = null;
-let prevOthers = [];
 let toastTimeout = null;
-const LS_KEY = 'letsmonta_v1';
+let prevActiveIds = [];
+let unsubscribeActive = null;
+let unsubscribeTaken = null;
 
-function getShared() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || { active: {}, taken: {} }; }
-  catch { return { active: {}, taken: {} }; }
-}
-function setShared(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
 function getMember(id) { return MEMBERS.find(m => m.id === id); }
 
-function renderPick() {
-  const s = getShared();
+// ── INIT ──
+async function init() {
+  const savedId = localStorage.getItem(SESSION_KEY);
+  if (savedId) {
+    // Check if this session is still valid in Firebase
+    const snap = await get(ref(db, `taken/${savedId}`));
+    if (snap.exists() && snap.val() === savedId) {
+      // Session still valid, restore it
+      currentUser = getMember(savedId);
+      if (currentUser) {
+        hideLoading();
+        showMain();
+        return;
+      }
+    } else {
+      // Session expired, clear it
+      localStorage.removeItem(SESSION_KEY);
+    }
+  }
+  hideLoading();
+  showPick();
+}
+
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+
+// ── PICK SCREEN ──
+function showPick() {
+  document.getElementById('pickScreen').classList.remove('hidden');
+  document.getElementById('mainScreen').classList.add('hidden');
+
+  // Listen to taken in real time so cards update live
+  if (unsubscribeTaken) unsubscribeTaken();
+  unsubscribeTaken = onValue(ref(db, 'taken'), snap => {
+    const taken = snap.val() || {};
+    renderPick(taken);
+  });
+}
+
+function renderPick(taken) {
   const grid = document.getElementById('profilesGrid');
   grid.innerHTML = '';
   MEMBERS.forEach(m => {
-    const isTaken = s.taken[m.id] && s.taken[m.id] !== (currentUser?.id);
+    const isTaken = taken[m.id] && taken[m.id] !== currentUser?.id;
     const card = document.createElement('div');
     card.className = 'profile-card' + (isTaken ? ' taken' : '');
     card.innerHTML = `
@@ -223,30 +255,44 @@ function renderPick() {
   });
 }
 
-function pickProfile(id) {
-  const s = getShared();
-  Object.keys(s.taken).forEach(k => { if (s.taken[k] === id) delete s.taken[k]; });
-  s.taken[id] = id;
-  setShared(s);
+async function pickProfile(id) {
+  if (unsubscribeTaken) { unsubscribeTaken(); unsubscribeTaken = null; }
+  await set(ref(db, `taken/${id}`), id);
+  localStorage.setItem(SESSION_KEY, id);
   currentUser = getMember(id);
   showMain();
 }
 
+// ── MAIN SCREEN ──
 function showMain() {
   document.getElementById('pickScreen').classList.add('hidden');
   document.getElementById('mainScreen').classList.remove('hidden');
   document.getElementById('topbarAvatar').src = currentUser.avatar;
   document.getElementById('topbarName').textContent = currentUser.name;
-  const s = getShared();
-  prevOthers = Object.keys(s.active || {}).filter(k => k !== currentUser.id);
-  renderMain();
-  startPolling();
+
+  // Listen to active in real time
+  if (unsubscribeActive) unsubscribeActive();
+  unsubscribeActive = onValue(ref(db, 'active'), snap => {
+    const active = snap.val() || {};
+    const id = currentUser.id;
+    const newActiveIds = Object.keys(active).filter(k => k !== id);
+
+    // Detect new joiners → show toast
+    newActiveIds.filter(k => !prevActiveIds.includes(k)).forEach(k => {
+      const m = getMember(k);
+      if (m) showToast(m);
+    });
+    prevActiveIds = newActiveIds;
+    renderMain(active);
+  });
+
+  // Clean up on page close/reload
+  window.addEventListener('beforeunload', cleanup);
 }
 
-function renderMain() {
-  const s = getShared();
+function renderMain(active) {
   const id = currentUser.id;
-  const isOn = !!(s.active || {})[id];
+  const isOn = !!(active[id]);
   const btn = document.getElementById('montaBtn');
   const caption = document.getElementById('montaCaption');
   btn.classList.toggle('active', isOn);
@@ -254,7 +300,7 @@ function renderMain() {
   caption.textContent = isOn ? '¡Estás en modo monta! 🔥' : 'Pulsa para activar';
   caption.className = 'monta-caption' + (isOn ? ' on' : '');
 
-  const others = Object.keys(s.active || {}).filter(k => k !== id);
+  const others = Object.keys(active).filter(k => k !== id);
   const list = document.getElementById('othersList');
   list.innerHTML = '';
   if (others.length === 0) {
@@ -275,30 +321,15 @@ function renderMain() {
   }
 }
 
-function toggleMonta() {
-  const s = getShared();
+window.toggleMonta = async function() {
   const id = currentUser.id;
-  if (!s.active) s.active = {};
-  if (s.active[id]) delete s.active[id];
-  else s.active[id] = Date.now();
-  setShared(s);
-  renderMain();
-}
-
-function startPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(() => {
-    const s = getShared();
-    const id = currentUser.id;
-    const newOthers = Object.keys(s.active || {}).filter(k => k !== id);
-    newOthers.filter(k => !prevOthers.includes(k)).forEach(k => {
-      const m = getMember(k);
-      if (m) showToast(m);
-    });
-    prevOthers = newOthers;
-    renderMain();
-  }, 2000);
-}
+  const snap = await get(ref(db, `active/${id}`));
+  if (snap.exists()) {
+    await remove(ref(db, `active/${id}`));
+  } else {
+    await set(ref(db, `active/${id}`), Date.now());
+  }
+};
 
 function showToast(member) {
   document.getElementById('toastAv').src = member.avatar;
@@ -309,19 +340,26 @@ function showToast(member) {
   toastTimeout = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-function logout() {
-  clearInterval(pollInterval);
-  const s = getShared();
-  if (s.active) delete s.active[currentUser.id];
-  if (s.taken) delete s.taken[currentUser.id];
-  setShared(s);
-  currentUser = null;
-  document.getElementById('mainScreen').classList.add('hidden');
-  document.getElementById('pickScreen').classList.remove('hidden');
-  renderPick();
+async function cleanup() {
+  if (!currentUser) return;
+  await remove(ref(db, `active/${currentUser.id}`));
 }
 
-renderPick();
+window.logout = async function() {
+  if (unsubscribeActive) { unsubscribeActive(); unsubscribeActive = null; }
+  if (currentUser) {
+    await remove(ref(db, `active/${currentUser.id}`));
+    await remove(ref(db, `taken/${currentUser.id}`));
+  }
+  localStorage.removeItem(SESSION_KEY);
+  currentUser = null;
+  prevActiveIds = [];
+  document.getElementById('mainScreen').classList.add('hidden');
+  showPick();
+};
+
+init();
+
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
