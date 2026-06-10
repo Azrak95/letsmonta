@@ -505,22 +505,7 @@ window.toggleMonta = async function() {
     }
   } else {
     await set(ref(db, `active/${id}`), Date.now());
-    await set(ref(db, `notify`), { senderId: id, senderName: currentUser.name, ts: Date.now() });
-    // Trigger GitHub Action to send push notifications
-    try {
-      await fetch('https://api.github.com/repos/Azrak95/letsmonta/dispatches', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'token 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',
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          event_type: 'monta-activated',
-          client_payload: { senderId: id, senderName: currentUser.name }
-        })
-      });
-    } catch(e) { console.log('Push trigger failed:', e.message); }
+    await set(ref(db, `notify`), { senderId: id, senderName: currentUser.name, ts: Date.now(), sent: false });
   }
 };
 
