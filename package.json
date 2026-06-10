@@ -1,0 +1,11 @@
+{
+  "name": "letsmonta-push",
+  "version": "1.0.0",
+  "main": "render-server.js",
+  "scripts": {
+    "start": "node render-server.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
