@@ -9,17 +9,20 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-let lastProcessedTs = 0;
+const processedTs = new Set();
 
 console.log('LetsMonta push server started, listening for events...');
 
 db.ref('notify').on('value', async snap => {
   if (!snap.exists()) return;
-  const { senderId, senderName, ts, sent } = snap.val();
+  const data = snap.val();
+  const { senderId, senderName, ts, sent } = data;
 
-  if (sent || ts <= lastProcessedTs) return;
-  lastProcessedTs = ts;
+  // Skip if already sent or already processed in this session
+  if (sent || processedTs.has(ts)) return;
+  processedTs.add(ts);
 
+  // Mark as sent in Firebase immediately
   await db.ref('notify/sent').set(true);
 
   const tokensSnap = await db.ref('tokens').once('value');
