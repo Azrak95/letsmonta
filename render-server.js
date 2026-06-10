@@ -37,8 +37,7 @@ db.ref('notify').on('value', async snap => {
   const message = {
     notification: {
       title: 'LetsMonta! 🍻',
-      body: `${senderName} está en modo monta! 🔥`,
-      icon: 'https://azrak95.github.io/letsmonta/app_icon.png'
+      body: `${senderName} está en modo monta! 🔥`
     },
     data: { senderId },
     tokens
@@ -47,8 +46,6 @@ db.ref('notify').on('value', async snap => {
   try {
     const response = await admin.messaging().sendEachForMulticast(message);
     console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
-
-    // Don't auto-delete tokens on failure - just log the error
     if (response.failureCount > 0) {
       response.responses.forEach((resp, idx) => {
         if (!resp.success) {
