@@ -1,8 +1,9 @@
 name: Send Push Notifications
 
 on:
-  repository_dispatch:
-    types: [monta-activated]
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
 
 jobs:
   send-push:
