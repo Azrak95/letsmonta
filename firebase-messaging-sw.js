@@ -11,18 +11,17 @@ firebase.initializeApp({
   appId: "1:827368602785:web:d6df974b604243579d04e0"
 });
 
-// Activar el nuevo SW inmediatamente sin esperar a que se cierren las pestañas
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
 
 const messaging = firebase.messaging();
 
+// El mensaje no lleva campo notification — solo data.
+// El SW es el único responsable de mostrar la notificación en todas las plataformas.
 messaging.onBackgroundMessage(payload => {
-  // iOS muestra la notificación automáticamente — no la mostramos aquí para evitar duplicado
-  const isIOS = /iphone|ipad|ipod/i.test(self.navigator?.userAgent || '');
-  if (isIOS) return;
+  const { title, body } = payload.data || {};
+  if (!title) return;
 
-  const { title, body } = payload.notification;
   self.registration.showNotification(title, {
     body,
     icon: '/letsmonta/app_icon.png',
