@@ -16,12 +16,10 @@ db.ref('notify').on('value', async snap => {
   const data = snap.val();
   if (!data || data.sent) return;
 
-  // Transacción atómica: solo una instancia puede marcar sent:true
-  // Si otra instancia ya lo hizo, esta aborta automáticamente
   let committed = false;
   await db.ref('notify').transaction(current => {
-    if (!current || current.sent) return; // abortar
-    return { ...current, sent: true };    // marcar y continuar
+    if (!current || current.sent) return;
+    return { ...current, sent: true };
   }, (error, com) => {
     if (error) console.error('Transaction error:', error);
     else committed = com;
@@ -51,19 +49,31 @@ db.ref('notify').on('value', async snap => {
   console.log(`Sending push to ${tokens.length} devices for ${senderName}...`);
 
   const message = {
-    notification: {
+    // Sin campo notification — el SW controla cómo mostrarla en cada plataforma
+    data: {
+      senderId,
+      senderName,
       title: 'LetsMonta! 🍻',
       body: `${senderName} está en modo monta! 🔥`
     },
-    data: { senderId },
-    tokens
+    tokens,
+    apns: {
+      payload: {
+        aps: {
+          alert: {
+            title: 'LetsMonta! 🍻',
+            body: `${senderName} está en modo monta! 🔥`
+          },
+          sound: 'default'
+        }
+      }
+    }
   };
 
   try {
     const response = await admin.messaging().sendEachForMulticast(message);
     console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
 
-    // Solo borrar tokens definitivamente inválidos
     if (response.failureCount > 0) {
       const deadTokenErrors = [
         'messaging/registration-token-not-registered',
