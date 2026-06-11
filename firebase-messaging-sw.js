@@ -14,10 +14,15 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(payload => {
-  const { title, body, icon } = payload.notification;
+  // En iOS la notificación ya la muestra el sistema automáticamente.
+  // Si llamamos también a showNotification, llega doble.
+  const isIOS = /iphone|ipad|ipod/i.test(self.navigator?.userAgent || '');
+  if (isIOS) return;
+
+  const { title, body } = payload.notification;
   self.registration.showNotification(title, {
     body,
-    icon: icon || '/letsmonta/app_icon.png',
+    icon: '/letsmonta/app_icon.png',
     badge: '/letsmonta/app_icon.png',
     vibrate: [200, 100, 200],
   });
