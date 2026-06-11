@@ -13,17 +13,9 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// No llamamos a showNotification aquí.
+// FCM ya muestra la notificación automáticamente al recibirla.
+// Si la mostramos también aquí, llega duplicada en todos los dispositivos.
 messaging.onBackgroundMessage(payload => {
-  // En iOS la notificación ya la muestra el sistema automáticamente.
-  // Si llamamos también a showNotification, llega doble.
-  const isIOS = /iphone|ipad|ipod/i.test(self.navigator?.userAgent || '');
-  if (isIOS) return;
-
-  const { title, body } = payload.notification;
-  self.registration.showNotification(title, {
-    body,
-    icon: '/letsmonta/app_icon.png',
-    badge: '/letsmonta/app_icon.png',
-    vibrate: [200, 100, 200],
-  });
+  // Intencionalmente vacío.
 });
