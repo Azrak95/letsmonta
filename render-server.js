@@ -8,17 +8,31 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-const processedTs = new Set();
 
 console.log('LetsMonta push server started, listening for events...');
 
 db.ref('notify').on('value', async snap => {
   if (!snap.exists()) return;
-  const { senderId, senderName, ts, sent } = snap.val();
-  if (sent || processedTs.has(ts)) return;
-  processedTs.add(ts);
+  const data = snap.val();
+  if (!data || data.sent) return;
 
-  await db.ref('notify/sent').set(true);
+  // Transacción atómica: solo una instancia puede marcar sent:true
+  // Si otra instancia ya lo hizo, esta aborta automáticamente
+  let committed = false;
+  await db.ref('notify').transaction(current => {
+    if (!current || current.sent) return; // abortar
+    return { ...current, sent: true };    // marcar y continuar
+  }, (error, com) => {
+    if (error) console.error('Transaction error:', error);
+    else committed = com;
+  });
+
+  if (!committed) {
+    console.log('Skipped: another instance already processed this event');
+    return;
+  }
+
+  const { senderId, senderName } = data;
 
   const tokensSnap = await db.ref('tokens').once('value');
   if (!tokensSnap.exists()) { console.log('No tokens'); return; }
@@ -49,9 +63,12 @@ db.ref('notify').on('value', async snap => {
     const response = await admin.messaging().sendEachForMulticast(message);
     console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
 
-    // Solo borrar tokens definitivamente inválidos (no errores temporales)
+    // Solo borrar tokens definitivamente inválidos
     if (response.failureCount > 0) {
-      const deadTokenErrors = ['messaging/registration-token-not-registered', 'messaging/invalid-registration-token'];
+      const deadTokenErrors = [
+        'messaging/registration-token-not-registered',
+        'messaging/invalid-registration-token'
+      ];
       const updates = {};
       response.responses.forEach((resp, idx) => {
         if (!resp.success && deadTokenErrors.includes(resp.error?.code)) {
@@ -78,5 +95,4 @@ const server = http.createServer((req, res) => {
 
 server.listen(process.env.PORT || 3000, () => {
   console.log(`HTTP server listening on port ${process.env.PORT || 3000}`);
-});
 });
