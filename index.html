@@ -553,11 +553,12 @@ async function cleanup() {
 window.logout = async function() {
   stopHeartbeat();
   if (unsubscribeActive) { unsubscribeActive(); unsubscribeActive = null; }
+  if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
   if (currentUser) {
     await remove(ref(db, `active/${currentUser.id}`));
     await remove(ref(db, `taken/${currentUser.id}`));
-    // Keep token for push notifications
-  if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+    // Borrar token al hacer logout — sin perfil no se quieren recibir notificaciones
+    await remove(ref(db, `tokens/${currentUser.id}`));
   }
   localStorage.removeItem(SESSION_KEY);
   currentUser = null;
