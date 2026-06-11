@@ -293,7 +293,7 @@ function initBubbles(canvasId) {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, remove, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 const firebaseConfig = {
@@ -347,6 +347,20 @@ async function setupPush(userId) {
     const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: sw });
     console.log('FCM token:', token ? 'obtained' : 'null');
     if (token) {
+      // Limpiar este token de cualquier otro userId antes de guardarlo
+      const allTokensSnap = await get(ref(db, 'tokens'));
+      if (allTokensSnap.exists()) {
+        const updates = {};
+        allTokensSnap.forEach(child => {
+          if (child.key !== userId && child.val() === token) {
+            updates[child.key] = null;
+          }
+        });
+        if (Object.keys(updates).length > 0) {
+          await update(ref(db, 'tokens'), updates);
+          console.log('Cleaned duplicate token from', Object.keys(updates).join(', '));
+        }
+      }
       await set(ref(db, `tokens/${userId}`), token);
       console.log('Token saved for', userId);
     }
