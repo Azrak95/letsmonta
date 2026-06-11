@@ -16,6 +16,7 @@ db.ref('notify').on('value', async snap => {
   const data = snap.val();
   if (!data || data.sent) return;
 
+  // Transacción atómica: solo una instancia procesa cada evento
   let committed = false;
   await db.ref('notify').transaction(current => {
     if (!current || current.sent) return;
@@ -35,66 +36,67 @@ db.ref('notify').on('value', async snap => {
   const tokensSnap = await db.ref('tokens').once('value');
   if (!tokensSnap.exists()) { console.log('No tokens'); return; }
 
-  const tokens = [];
+  const iosTokens = [];
+  const otherTokens = [];
   const tokenKeys = {};
+
   tokensSnap.forEach(child => {
-    if (child.key !== senderId) {
-      tokens.push(child.val());
-      tokenKeys[child.val()] = child.key;
-    }
+    if (child.key === senderId) return;
+    const val = child.val();
+    // Compatibilidad con tokens antiguos (string) y nuevos ({ token, platform })
+    const token = typeof val === 'string' ? val : val?.token;
+    const platform = typeof val === 'string' ? 'other' : (val?.platform || 'other');
+    if (!token) return;
+    tokenKeys[token] = child.key;
+    if (platform === 'ios') iosTokens.push(token);
+    else otherTokens.push(token);
   });
 
-  if (tokens.length === 0) { console.log('No recipients'); return; }
+  const totalRecipients = iosTokens.length + otherTokens.length;
+  if (totalRecipients === 0) { console.log('No recipients'); return; }
 
-  console.log(`Sending push to ${tokens.length} devices for ${senderName}...`);
+  console.log(`Sending push for ${senderName} → iOS: ${iosTokens.length}, other: ${otherTokens.length}`);
 
-  const message = {
-    // Sin campo notification — el SW controla cómo mostrarla en cada plataforma
-    data: {
-      senderId,
-      senderName,
-      title: 'LetsMonta! 🍻',
-      body: `${senderName} está en modo monta! 🔥`
-    },
-    tokens,
-    apns: {
-      payload: {
-        aps: {
-          alert: {
-            title: 'LetsMonta! 🍻',
-            body: `${senderName} está en modo monta! 🔥`
-          },
-          sound: 'default'
-        }
-      }
-    }
-  };
+  const title = 'LetsMonta! 🍻';
+  const body = `${senderName} está en modo monta! 🔥`;
+  const deadTokenErrors = [
+    'messaging/registration-token-not-registered',
+    'messaging/invalid-registration-token'
+  ];
+  const deadUpdates = {};
 
-  try {
-    const response = await admin.messaging().sendEachForMulticast(message);
-    console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
-
-    if (response.failureCount > 0) {
-      const deadTokenErrors = [
-        'messaging/registration-token-not-registered',
-        'messaging/invalid-registration-token'
-      ];
-      const updates = {};
+  async function sendAndClean(tokens, message) {
+    if (tokens.length === 0) return;
+    try {
+      const response = await admin.messaging().sendEachForMulticast({ ...message, tokens });
+      console.log(`Sent: ${response.successCount} ok, ${response.failureCount} failed`);
       response.responses.forEach((resp, idx) => {
         if (!resp.success && deadTokenErrors.includes(resp.error?.code)) {
           const userId = tokenKeys[tokens[idx]];
           if (userId) {
-            updates[userId] = null;
+            deadUpdates[userId] = null;
             console.log(`Removing dead token for ${userId}: ${resp.error.code}`);
           }
         }
       });
-      if (Object.keys(updates).length > 0) {
-        await db.ref('tokens').update(updates);
-      }
+    } catch (e) {
+      console.error('Error sending push:', e.message);
     }
-  } catch (e) {
-    console.error('Error sending push:', e.message);
+  }
+
+  // iOS: campo notification para que llegue aunque la app esté cerrada
+  await sendAndClean(iosTokens, {
+    notification: { title, body },
+    data: { senderId, senderName }
+  });
+
+  // Android / PC / otros: solo data, el SW muestra la notificación
+  await sendAndClean(otherTokens, {
+    data: { senderId, senderName, title, body }
+  });
+
+  if (Object.keys(deadUpdates).length > 0) {
+    await db.ref('tokens').update(deadUpdates);
   }
 });
 
