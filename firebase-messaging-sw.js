@@ -16,11 +16,12 @@ self.addEventListener('activate', event => event.waitUntil(self.clients.claim())
 
 const messaging = firebase.messaging();
 
-// El mensaje no lleva campo notification — solo data.
-// El SW es el único responsable de mostrar la notificación en todas las plataformas.
 messaging.onBackgroundMessage(payload => {
-  const { title, body } = payload.data || {};
-  if (!title) return;
+  // iOS recibe el campo notification directamente del servidor — no hacer nada aquí
+  // Android/PC reciben solo data — el SW muestra la notificación
+  const title = payload.data?.title;
+  const body = payload.data?.body;
+  if (!title) return; // iOS no tiene payload.data.title, sale aquí
 
   self.registration.showNotification(title, {
     body,
