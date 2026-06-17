@@ -11,22 +11,35 @@ firebase.initializeApp({
   appId: "1:827368602785:web:d6df974b604243579d04e0"
 });
 
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
-
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(payload => {
-  // iOS recibe el campo notification directamente del servidor — no hacer nada aquí
-  // Android/PC reciben solo data — el SW muestra la notificación
-  const title = payload.data?.title;
-  const body = payload.data?.body;
-  if (!title) return; // iOS no tiene payload.data.title, sale aquí
-
+  const { title, body } = payload.notification;
   self.registration.showNotification(title, {
     body,
     icon: '/letsmonta/app_icon.png',
     badge: '/letsmonta/app_icon.png',
     vibrate: [200, 100, 200],
+    data: { url: 'https://azrak95.github.io/letsmonta/' }
   });
+});
+
+// Al pulsar la notificación, abre la app
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || 'https://azrak95.github.io/letsmonta/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      // Si la app ya está abierta, ponla en foco
+      for (const client of clientList) {
+        if (client.url.includes('azrak95.github.io/letsmonta') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Si no está abierta, ábrela
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
+  );
 });
